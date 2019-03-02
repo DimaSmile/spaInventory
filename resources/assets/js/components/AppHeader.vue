@@ -8,7 +8,7 @@
             </v-list>
         </v-navigation-drawer> -->
         <v-toolbar app dark class="grey darken-3">
-                            <v-toolbar-title v-text="'Inventory'"></v-toolbar-title>
+                <v-toolbar-title v-text="'Inventory'"></v-toolbar-title>
             <v-spacer></v-spacer>
 
             <v-toolbar-items class="hidden-sm-and-down">

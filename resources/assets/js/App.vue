@@ -22,7 +22,7 @@
             <router-view></router-view>
         </div>
     </div> -->
-    <v-app id="inspire">
+    <v-app>
     <app-header></app-header>
         <v-content>
             <router-view></router-view>
