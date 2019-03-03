@@ -26,3 +26,6 @@ Route::group(['middleware' => 'jwt.auth'], function(){
 Route::group(['middleware' => 'jwt.refresh'], function(){
 	Route::get('auth/refresh', 'AuthController@refresh');
 });
+
+Route::resource('products', 'ProductController');
+Route::resource('categories', 'CategoryController');
