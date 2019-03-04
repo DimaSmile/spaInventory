@@ -14,8 +14,11 @@
             <v-toolbar-items class="hidden-sm-and-down">
                 <v-btn :to="{ name: 'home' }" flat>home</v-btn>
                 <v-btn v-if="!$auth.check()" :to="{ name: 'login' }" flat>Login</v-btn>
-                <v-btn v-if="!$auth.check()" :to="{ name: 'register' }" flat>Register</v-btn>
-                <v-btn v-if="$auth.check()" @click.prevent="$auth.logout()" flat>Logout</v-btn>
+
+                <!-- //if you want enable registration uncomment this block -->
+                <!-- <v-btn v-if="!$auth.check()" :to="{ name: 'register' }" flat>Register</v-btn> -->
+
+                <!-- <v-btn v-if="$auth.check()" @click.prevent="$auth.logout()" flat>Logout</v-btn> -->
             </v-toolbar-items>
         </v-toolbar>
     </div>

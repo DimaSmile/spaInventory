@@ -17,7 +17,7 @@ Vue.use(VueRouter);
 Vue.use(Vuetify)
 
 Vue.use(VueAxios, axios);
-axios.defaults.baseURL = 'http://inventory.loc:80/api';
+axios.defaults.baseURL = 'http://localhost:8080/api';
 
 const router = new VueRouter({
     // mode: 'history',
@@ -25,14 +25,17 @@ const router = new VueRouter({
         path: '/',
         name: 'home',
         component: Home
-    },{
-        path: '/register',
-        name: 'register',
-        component: Register,
-        meta: {
-            auth: false
-        }
-    },{
+    },
+    //if you want enable registration uncomment this block
+    {
+        path: '/register', redirect: '/'
+    //     name: 'register',
+    //     component: Register,
+    //     meta: {
+    //         auth: false
+    //     }
+    },
+    {
         path: '/login',
         name: 'login',
         component: Login,
