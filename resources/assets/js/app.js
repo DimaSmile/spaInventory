@@ -17,7 +17,8 @@ Vue.use(VueRouter);
 Vue.use(Vuetify)
 
 Vue.use(VueAxios, axios);
-axios.defaults.baseURL = 'http://localhost:8080/api';
+// axios.defaults.baseURL = 'http://localhost:8080/api';
+axios.defaults.baseURL = 'http://inventory.loc:80/api';
 
 const router = new VueRouter({
     // mode: 'history',
