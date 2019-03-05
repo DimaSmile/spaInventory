@@ -117,7 +117,7 @@
             { text: 'Изображение', align: 'center', value: 'imageUrl', sortable: false },
             { text: 'Цена дроп', align: 'center', value: 'dropPrice' },
             { text: 'Цена розница', align: 'center', value: 'retailPrice' },
-            { text: 'Размеры', align: 'center', value: 'sizes' },
+            { text: 'Размеры', align: 'center', value: 'sizes', sortable: false },
             { text: 'Действие', value: 'action', sortable: false }
         ],
         products: [],
@@ -153,11 +153,24 @@
         dialog (val) {
             val || this.close()
         }
+        // при изменениях маршрута запрашиваем данные снова
+        // '$route': 'fetchData'
     },
-    created () {
-        this.initialize()
+    created () { //inside hook 'created' recommended do fetching data
+        this.fetchData();
+        // this.initialize();
     },
+    // mounted() {
+
+    // },
     methods: {
+        fetchData(){
+            this.axios.get('products').then((response) => {
+                console.log(response.data)
+                console.log(this.products)
+                this.products = response.data;
+            })
+        },
         pickFile () {
             this.$refs.image.click ()
         },
@@ -181,101 +194,101 @@
                 this.editedItem.imageUrl = ''
             }
         },
-        initialize () {
-            this.products = [
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29, 35, 36, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 222,
-                sizes: [29, 30 , 31, 32, 33, 34, 35]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [ 34, 35, 36, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [ 31, 32, 33, 34, 35, 36, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29, 30 , 35, 36, 37]
-            },
-            {
-                name: 'Frozen Yogurt',
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-                dropPrice: 6.0,
-                retailPrice: 24,
-                sizes: [29, 30 , 31, 32]
-            }
-            ]
-        },
+        // initialize () {
+        //     this.products = [
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29, 35, 36, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 222,
+        //         sizes: [29, 30 , 31, 32, 33, 34, 35]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [ 34, 35, 36, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [ 31, 32, 33, 34, 35, 36, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29, 30 , 35, 36, 37]
+        //     },
+        //     {
+        //         name: 'Frozen Yogurt',
+        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
+        //         dropPrice: 6.0,
+        //         retailPrice: 24,
+        //         sizes: [29, 30 , 31, 32]
+        //     }
+        //     ]
+        // },
         editItem (item) {
             this.editedIndex = this.products.indexOf(item)
             this.editedItem = Object.assign({}, item)
