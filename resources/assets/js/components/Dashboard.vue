@@ -17,14 +17,27 @@
             <span class="headline">{{ formTitle }}</span>
           </v-card-title>
 
+        <v-form ref="form" v-model="valid" lazy-validation>
           <v-card-text>
             <v-container grid-list-md>
                 <v-layout wrap>
-                    <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.name" label="Наименование"></v-text-field>
+                    <v-flex xs12>
+                        <v-text-field v-model="editedItem.name" label="Наименование" :rules="[v => !!v || 'Name is required']" required></v-text-field>
                     </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.imageName" hint="Выберите изображение" persistent-hint label="" @click='pickFile' prepend-icon='attach_file'></v-text-field>
+                    <v-flex xs12 sm6>
+                        <!-- <v-text-field v-model="editedItem.imageName" hint="Выберите изображение" persistent-hint label="" @click='pickFile' prepend-icon='attach_file'></v-text-field> -->
+                            <v-btn
+                                :loading="loading3"
+                                :disabled="loading3"
+                                color="grey darken-3"
+                                class="white--text"
+                                @click="pickFile"
+                                depressed
+                            >
+                            Загрузить
+                            <v-icon right dark>cloud_upload</v-icon>
+                            </v-btn>
+                            <p class="text-md-left">{{ this.editedItem.imageUrl ? this.editedItem.imageName : 'Выберите изображение'}}</p>
                         <input 
                             type="file"
                             style="display: none"
@@ -33,11 +46,14 @@
                             @change="onFilePicked"
                         >
                     </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.dropPrice" label="Цена дроп"></v-text-field>
+                    <v-flex xs12 sm6>
+                        <v-img :title="this.editedItem.imageName" height="100" width="70" :alt="this.editedItem.imageName" :src="this.editedItem.imageUrl"></v-img>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.retailPrice" label="Цена розница"></v-text-field>
+                        <v-text-field v-model="editedItem.dropPrice" class="inputPrice" label="Цена дроп" type="number" :rules="[v => !!v || 'Обязательное поле']"></v-text-field required>
+                    </v-flex>
+                    <v-flex xs12 sm6 md4>
+                        <v-text-field v-model="editedItem.retailPrice" class="inputPrice" label="Цена розница" type="number" :rules="[v => !!v || 'Обязательное поле']" required></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
                         <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
@@ -57,9 +73,10 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="red" flat @click="close">Отмена</v-btn>
-            <v-btn color="green" flat @click="save">Сохранить</v-btn>
+            <v-btn color="error" flat @click="close">Отмена</v-btn>
+            <v-btn :disabled="!valid" color="success" flat @click="save">Сохранить</v-btn>
           </v-card-actions>
+        </v-form>
         </v-card>
       </v-dialog>
     </v-toolbar>
@@ -98,19 +115,38 @@
           </v-icon>
         </td>
       </template>
-      <template v-slot:no-data>
+      <!-- <template v-slot:no-data>
         <v-btn color="grey darken-3" @click="initialize">Сброс</v-btn>
-      </template>
+      </template> -->
     </v-data-table>
   </div>
 </template>
 
 <script>
+  class Errors {
+    constructor(){
+        this.errors = {}
+    }
+
+    get(field){
+        if(this.errors[field]){
+        return this.errors[field][0];
+        }
+    }
+
+    record(errors){
+        this.errors = errors;
+    }
+  }
   export default {
     data: () => ({
+        loader: null,
+        loading3: false,
+        valid: false,
         dialog: false,
         selected: '',
         multiple: "true",
+        errors: new Errors,
         allSizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37],
         headers: [
             { text: 'Наименование', align: 'left', sortable: false, value: 'name'},
@@ -127,8 +163,8 @@
             imageName: '',
             imageUrl: '',
             imageFile: '',
-            dropPrice: 0,
-            retailPrice: 0,
+            dropPrice: null,
+            retailPrice: null,
             sizes: []
         },
         defaultItem: {
@@ -136,8 +172,8 @@
             imageName: '',
             imageUrl: '',
             imageFile: '',
-            dropPrice: 0,
-            retailPrice: 0,
+            dropPrice: null,
+            retailPrice: null,
             sizes: []
         }
     }),
@@ -145,39 +181,53 @@
         formTitle () {
             return this.editedIndex === -1 ? 'Новый продукт' : 'Редактировать продукт'
         },
-        // sortSizes (itemSizes) {
-            
-        // }
     },
     watch: {
         dialog (val) {
             val || this.close()
+        },
+        loader () {
+            const l = this.loader
+            this[l] = !this[l]
+
+            setTimeout(() => (this[l] = false), 3000)
+
+            this.loader = null
         }
         // при изменениях маршрута запрашиваем данные снова
         // '$route': 'fetchData'
     },
     created () { //inside hook 'created' recommended do fetching data
         this.fetchData();
-        // this.initialize();
     },
-    // mounted() {
-
-    // },
     methods: {
         fetchData(){
             this.axios.get('products').then((response) => {
-                console.log(response.data)
-                console.log(this.products)
                 this.products = response.data;
             })
         },
-        pickFile () {
+        createProduct(newProduct){
+            console.log(11111);
+            console.log(newProduct);
+            this.axios({
+                method: 'post',
+                url: 'products',
+                data: newProduct
+            }).then((response) => {
+                console.log(2222);
+                console.log(response.status);
+            }).catch(error => this.errors.record(error.response.data));
+            // debugger;
+        },
+        pickFile (event) {
+            // console.log(event)
             this.$refs.image.click ()
         },
         
         onFilePicked (e) {
             const files = e.target.files
             if(files[0] !== undefined) {
+                this.loader = 'loading3'
                 this.editedItem.imageName = files[0].name
                 if(this.editedItem.imageName.lastIndexOf('.') <= 0) {
                     return
@@ -194,101 +244,6 @@
                 this.editedItem.imageUrl = ''
             }
         },
-        // initialize () {
-        //     this.products = [
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29, 35, 36, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 222,
-        //         sizes: [29, 30 , 31, 32, 33, 34, 35]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [ 34, 35, 36, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [ 31, 32, 33, 34, 35, 36, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29, 30 , 35, 36, 37]
-        //     },
-        //     {
-        //         name: 'Frozen Yogurt',
-        //         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4hX7ktSvWlatywBvUSLsUjMKGDvI1aAY9haPf4QOeOBFT1GRn',
-        //         dropPrice: 6.0,
-        //         retailPrice: 24,
-        //         sizes: [29, 30 , 31, 32]
-        //     }
-        //     ]
-        // },
         editItem (item) {
             this.editedIndex = this.products.indexOf(item)
             this.editedItem = Object.assign({}, item)
@@ -299,19 +254,28 @@
             confirm('Вы уверены что хотите удалить этот продукт?') && this.products.splice(index, 1)
         },
         close () {
+            console.log(3333)
             this.dialog = false
             setTimeout(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
+                this.editedItem = Object.assign({}, this.defaultItem)
             this.editedIndex = -1
             }, 300)
         },
         save () {
-            if (this.editedIndex > -1) {
-                Object.assign(this.products[this.editedIndex], this.editedItem)
-            } else {
-                this.products.push(this.editedItem)
+            // console.log(5555)
+
+            // debugger
+            if (this.$refs.form.validate()) {
+                if (this.editedIndex > -1) {
+                    Object.assign(this.products[this.editedIndex], this.editedItem)
+                } else {
+                    this.createProduct(this.editedItem);
+                    console.log(this.products.length)
+                    this.products.push(this.editedItem)
+                    console.log(this.products.length)
+                }
+                this.close()
             }
-            this.close()
         }
     }
   }
@@ -333,6 +297,55 @@ select option{
 option{
     border: 1px solid black;
     margin: 1px;
+}
+
+/* .custom-loader {
+    animation: loader 1s infinite;
+    display: flex;
+} */
+
+@-moz-keyframes loader {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+@-webkit-keyframes loader {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+@-o-keyframes loader {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+@keyframes loader {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+.inputPrice input[type='number'] {
+    -moz-appearance: textfield;
 }
 
 </style>
