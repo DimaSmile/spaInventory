@@ -38,7 +38,28 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        var_dump($request->file('image'));
+        $path = $request->file('image')->store('uploads', 'public');
+        if ($request->hasFile('image')) {
+            return 'true';
+        }else{
+            return 'false';
+        }
+        // dd($request->all(), 11111);exit;
+        try {
+            $this->validate($request, [
+                'name' => 'bail|required',
+                'dropPrice' => 'integer',
+                'retailPrice' => 'integer',
+            ]);
+        } catch (ValidationException $exception) {
+            return response()->json([
+                'status' => 'error',
+                'message'    => 'Error',
+                'errors' => $exception->errors(),
+            ], 422);
+        }
+        Product::create($request->all());
     }
 
     /**

@@ -17,43 +17,45 @@
             <span class="headline">{{ formTitle }}</span>
           </v-card-title>
 
-        <v-form ref="form" v-model="valid" lazy-validation>
+        <v-form  @submit.prevent="save" ref="form" id="formId" method="post" v-model="valid" lazy-validation>
           <v-card-text>
             <v-container grid-list-md>
                 <v-layout wrap>
                     <v-flex xs12>
-                        <v-text-field v-model="editedItem.name" label="Наименование" :rules="[v => !!v || 'Name is required']" required></v-text-field>
+                        <v-text-field v-model="editedItem.name" name="name" label="Наименование" :rules="[v => !!v || 'Name is required']" required></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6>
                         <!-- <v-text-field v-model="editedItem.imageName" hint="Выберите изображение" persistent-hint label="" @click='pickFile' prepend-icon='attach_file'></v-text-field> -->
-                            <v-btn
-                                :loading="loading3"
-                                :disabled="loading3"
-                                color="grey darken-3"
-                                class="white--text"
-                                @click="pickFile"
-                                depressed
-                            >
+                        <v-btn
+                            :loading="loading3"
+                            :disabled="loading3"
+                            color="grey darken-3"
+                            class="white--text"
+                            @click="pickFile"
+                            depressed
+                        >
                             Загрузить
                             <v-icon right dark>cloud_upload</v-icon>
                             </v-btn>
-                            <p class="text-md-left">{{ this.editedItem.imageUrl ? this.editedItem.imageName : 'Выберите изображение'}}</p>
+                            <p class="text-md-left">{{ editedItem.imageName ? editedItem.imageName : 'Выберите изображение'}}</p>
                         <input 
                             type="file"
                             style="display: none"
                             ref="image"
+                            name="image"
                             accept="image/*"
+                            id="image-upload"
                             @change="onFilePicked"
                         >
                     </v-flex>
                     <v-flex xs12 sm6>
-                        <v-img :title="this.editedItem.imageName" height="100" width="70" :alt="this.editedItem.imageName" :src="this.editedItem.imageUrl"></v-img>
+                        <v-img :title="editedItem.imageName" height="100" width="70" :src="editedItem.imageUrl"></v-img>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.dropPrice" class="inputPrice" label="Цена дроп" type="number" :rules="[v => !!v || 'Обязательное поле']"></v-text-field required>
+                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" class="inputPrice" label="Цена дроп" type="number" :rules="[v => !!v || 'Обязательное поле']"></v-text-field required>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.retailPrice" class="inputPrice" label="Цена розница" type="number" :rules="[v => !!v || 'Обязательное поле']" required></v-text-field>
+                        <v-text-field v-model="editedItem.retailPrice" name="retailPrice" class="inputPrice" label="Цена розница" type="number" :rules="[v => !!v || 'Обязательное поле']" required></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
                         <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
@@ -71,12 +73,13 @@
             </v-container>
           </v-card-text>
 
-          <v-card-actions>
+        </v-form>
+        <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="error" flat @click="close">Отмена</v-btn>
-            <v-btn :disabled="!valid" color="success" flat @click="save">Сохранить</v-btn>
-          </v-card-actions>
-        </v-form>
+            <v-btn type="submit" :disabled="!valid" form="formId" color="success" flat>Сохранить</v-btn>
+            
+        </v-card-actions>
         </v-card>
       </v-dialog>
     </v-toolbar>
@@ -146,6 +149,7 @@
         dialog: false,
         selected: '',
         multiple: "true",
+        image: null,
         errors: new Errors,
         allSizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37],
         headers: [
@@ -160,18 +164,16 @@
         editedIndex: -1,
         editedItem: {
             name: '',
-            imageName: '',
             imageUrl: '',
-            imageFile: '',
+            imageName: '',
             dropPrice: null,
             retailPrice: null,
             sizes: []
         },
         defaultItem: {
             name: '',
-            imageName: '',
             imageUrl: '',
-            imageFile: '',
+            imageName: '',
             dropPrice: null,
             retailPrice: null,
             sizes: []
@@ -207,41 +209,42 @@
             })
         },
         createProduct(newProduct){
-            console.log(11111);
-            console.log(newProduct);
+
             this.axios({
                 method: 'post',
                 url: 'products',
+                headers: { 'content-type': 'multipart/form-data' },
                 data: newProduct
             }).then((response) => {
-                console.log(2222);
-                console.log(response.status);
+                // console.log(2222);
+                // console.log(response.status);
             }).catch(error => this.errors.record(error.response.data));
-            // debugger;
         },
         pickFile (event) {
-            // console.log(event)
             this.$refs.image.click ()
         },
         
         onFilePicked (e) {
             const files = e.target.files
             if(files[0] !== undefined) {
-                this.loader = 'loading3'
                 this.editedItem.imageName = files[0].name
-                if(this.editedItem.imageName.lastIndexOf('.') <= 0) {
+                if(this.editedItem.imageName <= 0) {
                     return
                 }
-                const fr = new FileReader ()
-                fr.readAsDataURL(files[0])
-                fr.addEventListener('load', () => {
-                    this.editedItem.imageUrl = fr.result
-                    this.editedItem.imageFile = files[0] // this is an image file that can be sent to server...
+
+                // const formData = new FormData();
+                const fileReader = new FileReader ()
+                this.loader = 'loading3'
+                fileReader.addEventListener('load', () => {
+                    this.editedItem.imageUrl = fileReader.result;
+                    // this.editedItem.image.file = files[0] // this is an image file that can be sent to server...
                 })
+                fileReader.readAsDataURL(files[0]);
+                this.editedItem.image = files[0];
             } else {
-                this.editedItem.imageName = ''
-                this.editedItem.imageFile = ''
-                this.editedItem.imageUrl = ''
+                this.editedItem.image = '';
+                // this.editedItem.image.file = '';
+                // this.editedItem.image.url = '';
             }
         },
         editItem (item) {
@@ -254,25 +257,31 @@
             confirm('Вы уверены что хотите удалить этот продукт?') && this.products.splice(index, 1)
         },
         close () {
-            console.log(3333)
             this.dialog = false
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
             this.editedIndex = -1
             }, 300)
         },
-        save () {
-            // console.log(5555)
-
-            // debugger
+        save (event) {
+            var formData = new FormData(event.target);
+            // formData.append('image', this.image);//append data example
+            console.log(formData.get('name'));
+            console.log(formData.get('dropPrice'));
+            console.log(formData.get('retailPrice'));
+            console.log(formData.get('image'));
+            
+            // this.editedItem.name = formData.get('name')
+            // this.editedItem.dropPrice = formData.get('dropPrice')
+            // this.editedItem.retailPrice = formData.get('retailPrice')
+            // this.editedItem.image = formData.get('image')
+            
             if (this.$refs.form.validate()) {
                 if (this.editedIndex > -1) {
                     Object.assign(this.products[this.editedIndex], this.editedItem)
                 } else {
-                    this.createProduct(this.editedItem);
-                    console.log(this.products.length)
-                    this.products.push(this.editedItem)
-                    console.log(this.products.length)
+                    this.createProduct(formData);
+                    this.products.push(this.editedItem);
                 }
                 this.close()
             }
