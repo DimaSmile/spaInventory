@@ -38,28 +38,41 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        var_dump($request->file('image'));
-        $path = $request->file('image')->store('uploads', 'public');
-        if ($request->hasFile('image')) {
-            return 'true';
-        }else{
-            return 'false';
-        }
-        // dd($request->all(), 11111);exit;
+
+        // if ($request->hasFile('image')) {
+        //     return 'true';
+        // }else{
+        //     return 'false';
+        // }
         try {
             $this->validate($request, [
-                'name' => 'bail|required',
-                'dropPrice' => 'integer',
+                'name'        => 'required',
+                'dropPrice'   => 'integer',
                 'retailPrice' => 'integer',
+                'image'       => 'file'
             ]);
         } catch (ValidationException $exception) {
             return response()->json([
-                'status' => 'error',
-                'message'    => 'Error',
-                'errors' => $exception->errors(),
+                'status'  => 'error',
+                'message' => 'Error',
+                'errors'  => $exception->errors(),
             ], 422);
         }
-        Product::create($request->all());
+        // ['name', 'drop_price', 'retail_price', 'image_url', 'image_name', 'category_id'];
+        // Product::create($request->all());
+        $imageName = $request->image->getClientOriginalName();
+        $imagePath = $request->image->store('uploads', 'public');//use storeAs for specify filename
+
+        $newProduct = new Product;
+        $newProduct->name = $request->name;
+        $newProduct->drop_price = $request->dropPrice;
+        $newProduct->retail_price = $request->retailPrice;
+        $newProduct->image_url = $imagePath;
+        $newProduct->image_name = $imageName;
+        $newProduct->category_id = 1;
+        $newProduct->save();
+
+        return $newProduct;
     }
 
     /**

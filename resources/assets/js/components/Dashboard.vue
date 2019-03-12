@@ -149,7 +149,6 @@
         dialog: false,
         selected: '',
         multiple: "true",
-        image: null,
         errors: new Errors,
         allSizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37],
         headers: [
@@ -192,7 +191,7 @@
             const l = this.loader
             this[l] = !this[l]
 
-            setTimeout(() => (this[l] = false), 3000)
+            setTimeout(() => (this[l] = false), 500)
 
             this.loader = null
         }
@@ -216,8 +215,8 @@
                 headers: { 'content-type': 'multipart/form-data' },
                 data: newProduct
             }).then((response) => {
-                // console.log(2222);
-                // console.log(response.status);
+                console.log(2222);
+                console.log(response);
             }).catch(error => this.errors.record(error.response.data));
         },
         pickFile (event) {
@@ -232,19 +231,19 @@
                     return
                 }
 
-                // const formData = new FormData();
-                const fileReader = new FileReader ()
+                // const fileReader = new FileReader ()
+                // diff beetween FileReader.readAsDataURL and URL.createObjectURL
                 this.loader = 'loading3'
-                fileReader.addEventListener('load', () => {
-                    this.editedItem.imageUrl = fileReader.result;
-                    // this.editedItem.image.file = files[0] // this is an image file that can be sent to server...
-                })
-                fileReader.readAsDataURL(files[0]);
-                this.editedItem.image = files[0];
+
+                // fileReader.addEventListener('load', () => {
+                //     this.editedItem.imageUrl = fileReader.result;//result содержит данные после чтения файла методом readAsDataURL
+                // })
+                // fileReader.readAsDataURL(files[0]);
+                // this.editedItem.image = files[0];
+                this.editedItem.imageUrl = URL.createObjectURL(files[0]);
             } else {
-                this.editedItem.image = '';
-                // this.editedItem.image.file = '';
-                // this.editedItem.image.url = '';
+                this.editedItem.imageName = '';
+                this.editedItem.imageUrl = '';
             }
         },
         editItem (item) {
@@ -258,6 +257,7 @@
         },
         close () {
             this.dialog = false
+            URL.revokeObjectURL(this.editedItem.imageUrl);// освобождает URL-объект
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
             this.editedIndex = -1
@@ -266,15 +266,6 @@
         save (event) {
             var formData = new FormData(event.target);
             // formData.append('image', this.image);//append data example
-            console.log(formData.get('name'));
-            console.log(formData.get('dropPrice'));
-            console.log(formData.get('retailPrice'));
-            console.log(formData.get('image'));
-            
-            // this.editedItem.name = formData.get('name')
-            // this.editedItem.dropPrice = formData.get('dropPrice')
-            // this.editedItem.retailPrice = formData.get('retailPrice')
-            // this.editedItem.image = formData.get('image')
             
             if (this.$refs.form.validate()) {
                 if (this.editedIndex > -1) {
