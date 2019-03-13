@@ -55,7 +55,7 @@
                         <v-img :title="editedItem.imageName" height="100" width="70" :src="editedItem.imageUrl"></v-img>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="priceRule"></v-text-field >
+                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="priceRule"></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
                         <v-text-field v-model="editedItem.retailPrice" name="retailPrice" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="priceRule"></v-text-field>
@@ -154,17 +154,14 @@
         selected: '',
         multiple: "true",
         errors: new Errors,
-        priceRule: [
-            // v => !!v || 'Обязательное поле',
-           v => v.length <= 6 || 'максимум 6 символов'
-        ],
+        priceRule: [ v =>  v.toString().length <= 6 || 'максимум 6 символов' ],
         skuRule: [
             v => !!v || 'Артикул обязателен',
             // v => this.products.find(o => o.sku === v) || 'Артикул существует'
         ],
         allSizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37],
         headers: [
-            { text: 'Наименование/Артикул', align: 'left', sortable: false, value: 'name'},
+            { text: 'Наименование / Артикул', align: 'left', sortable: false, value: 'name'},
             { text: 'Изображение', align: 'center', value: 'imageUrl', sortable: false },
             { text: 'Цена дроп', align: 'center', value: 'dropPrice' },
             { text: 'Цена розница', align: 'center', value: 'retailPrice' },
