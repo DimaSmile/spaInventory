@@ -25,7 +25,7 @@
                         <v-text-field v-model="editedItem.name" name="name" label="Наименование" :rules="[v => !!v || 'Имя обязательно']" required></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6>
-                        <v-text-field v-model="editedItem.sku" name="sku" label="Артикул" :rules="skuRule" required></v-text-field>
+                        <v-text-field v-model="editedItem.sku" name="sku" label="Артикул" :rules="[isSku]" required></v-text-field> <!-- isRequired -->
                     </v-flex>
                     <v-flex xs12 sm6>
                         <!-- <v-text-field v-model="editedItem.imageName" hint="Выберите изображение" persistent-hint label="" @click='pickFile' prepend-icon='attach_file'></v-text-field> -->
@@ -154,11 +154,8 @@
         selected: '',
         multiple: "true",
         errors: new Errors,
-        priceRule: [ v =>  v.toString().length <= 6 || 'максимум 6 символов' ],
-        skuRule: [
-            v => !!v || 'Артикул обязателен',
-            // v => this.products.find(o => o.sku === v) || 'Артикул существует'
-        ],
+        priceRule: [ v =>  v.toString().length <= 6 || 'Максимум 6 символов' ],
+        // isRequired: [ v => !!v || 'Артикул обязателен' ],
         allSizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37],
         headers: [
             { text: 'Наименование / Артикул', align: 'left', sortable: false, value: 'name'},
@@ -219,7 +216,6 @@
             })
         },
         createProduct(newProduct){
-
             this.axios({
                 method: 'post',
                 url: 'products',
@@ -233,7 +229,13 @@
         pickFile (event) {
             this.$refs.image.click ()
         },
-        
+        isSku(inputValue){
+            let rule = this.products.find(o => o.sku === inputValue); 
+            if(rule){
+                return 'Артикул существует'
+            }
+            return false;
+        },
         onFilePicked (e) {
             const files = e.target.files
             if(files[0] !== undefined) {
