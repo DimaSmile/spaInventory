@@ -21,8 +21,11 @@
           <v-card-text>
             <v-container grid-list-md>
                 <v-layout wrap>
-                    <v-flex xs12>
-                        <v-text-field v-model="editedItem.name" name="name" label="Наименование" :rules="[v => !!v || 'Name is required']" required></v-text-field>
+                    <v-flex xs12 sm6>
+                        <v-text-field v-model="editedItem.name" name="name" label="Наименование" :rules="[v => !!v || 'Имя обязательно']" required></v-text-field>
+                    </v-flex>
+                    <v-flex xs12 sm6>
+                        <v-text-field v-model="editedItem.sku" name="sku" label="Артикул" :rules="skuRule" required></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6>
                         <!-- <v-text-field v-model="editedItem.imageName" hint="Выберите изображение" persistent-hint label="" @click='pickFile' prepend-icon='attach_file'></v-text-field> -->
@@ -52,10 +55,10 @@
                         <v-img :title="editedItem.imageName" height="100" width="70" :src="editedItem.imageUrl"></v-img>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" class="inputPrice" label="Цена дроп" type="number" :rules="[v => !!v || 'Обязательное поле']"></v-text-field required>
+                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="priceRule"></v-text-field >
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.retailPrice" name="retailPrice" class="inputPrice" label="Цена розница" type="number" :rules="[v => !!v || 'Обязательное поле']" required></v-text-field>
+                        <v-text-field v-model="editedItem.retailPrice" name="retailPrice" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="priceRule"></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
                         <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
@@ -89,7 +92,8 @@
       class="elevation-1"
     >
       <template v-slot:items="props">
-        <td>{{ props.item.name }}</td>
+          <!-- <td>{{ props.item}}</td> -->
+        <td>{{ props.item.name }} / {{ props.item.sku }}</td>
         <td class="text-xs-center"><v-img height="186" width="126" :src="props.item.imageUrl"></v-img></td>
         <td class="text-xs-center">{{ props.item.dropPrice }}</td>
         <td class="text-xs-center">{{ props.item.retailPrice }}</td>
@@ -150,9 +154,17 @@
         selected: '',
         multiple: "true",
         errors: new Errors,
+        priceRule: [
+            // v => !!v || 'Обязательное поле',
+           v => v.length <= 6 || 'максимум 6 символов'
+        ],
+        skuRule: [
+            v => !!v || 'Артикул обязателен',
+            // v => this.products.find(o => o.sku === v) || 'Артикул существует'
+        ],
         allSizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37],
         headers: [
-            { text: 'Наименование', align: 'left', sortable: false, value: 'name'},
+            { text: 'Наименование/Артикул', align: 'left', sortable: false, value: 'name'},
             { text: 'Изображение', align: 'center', value: 'imageUrl', sortable: false },
             { text: 'Цена дроп', align: 'center', value: 'dropPrice' },
             { text: 'Цена розница', align: 'center', value: 'retailPrice' },
@@ -163,18 +175,20 @@
         editedIndex: -1,
         editedItem: {
             name: '',
+            sku: '',
             imageUrl: '',
             imageName: '',
-            dropPrice: null,
-            retailPrice: null,
+            dropPrice: '',
+            retailPrice: '',
             sizes: []
         },
         defaultItem: {
             name: '',
+            sku: '',
             imageUrl: '',
             imageName: '',
-            dropPrice: null,
-            retailPrice: null,
+            dropPrice: '',
+            retailPrice: '',
             sizes: []
         }
     }),
@@ -257,7 +271,7 @@
         },
         close () {
             this.dialog = false
-            URL.revokeObjectURL(this.editedItem.imageUrl);// освобождает URL-объект
+            //URL.revokeObjectURL(this.editedItem.imageUrl);// освобождает URL-объект
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
             this.editedIndex = -1
@@ -269,6 +283,7 @@
             
             if (this.$refs.form.validate()) {
                 if (this.editedIndex > -1) {
+                    // this.editProduct(formData);
                     Object.assign(this.products[this.editedIndex], this.editedItem)
                 } else {
                     this.createProduct(formData);

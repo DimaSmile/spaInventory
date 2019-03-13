@@ -17,12 +17,13 @@ class CreateProductsTable extends Migration
             $table->increments('id');
 
             $table->string('name');
+            $table->string('sku')->unique();
 
-            $table->float('drop_price');
-            $table->float('retail_price');
+            $table->float('drop_price')->nullable();
+            $table->float('retail_price')->nullable();
 
-            $table->string('image_url');
-            $table->string('image_name');
+            $table->string('image_url')->nullable();
+            $table->string('image_name')->nullable();
 
             $table->integer('category_id')->unsigned();
             // $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');

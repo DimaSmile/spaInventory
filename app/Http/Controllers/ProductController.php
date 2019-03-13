@@ -47,9 +47,10 @@ class ProductController extends Controller
         try {
             $this->validate($request, [
                 'name'        => 'required',
-                'dropPrice'   => 'integer',
-                'retailPrice' => 'integer',
-                'image'       => 'file'
+                'sku'         => 'unique:products|required',
+                'dropPrice'   => 'nullable|integer',
+                'retailPrice' => 'nullable|integer',
+                'image'       => 'image|mimes:jpeg,png,jpg,gif,svg'//required
             ]);
         } catch (ValidationException $exception) {
             return response()->json([
@@ -60,15 +61,19 @@ class ProductController extends Controller
         }
         // ['name', 'drop_price', 'retail_price', 'image_url', 'image_name', 'category_id'];
         // Product::create($request->all());
-        $imageName = $request->image->getClientOriginalName();
-        $imagePath = $request->image->store('uploads', 'public');//use storeAs for specify filename
-
         $newProduct = new Product;
+        if ($request->hasFile('image')) {
+            $imageName = $request->image->getClientOriginalName();
+            $imagePath = $request->image->store('uploads', 'public');//use storeAs for specify filename
+            $newProduct->image_name = $imageName;
+            $newProduct->image_url = $imagePath;
+        }
         $newProduct->name = $request->name;
+        $newProduct->sku = $request->sku;
         $newProduct->drop_price = $request->dropPrice;
+
         $newProduct->retail_price = $request->retailPrice;
-        $newProduct->image_url = $imagePath;
-        $newProduct->image_name = $imageName;
+        
         $newProduct->category_id = 1;
         $newProduct->save();
 
