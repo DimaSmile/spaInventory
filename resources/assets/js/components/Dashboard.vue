@@ -248,6 +248,9 @@
             }
             return false;
         },
+        resetValidation () {
+            this.$refs.form.resetValidation()
+        },
         onFilePicked (e) {
             const files = e.target.files
             if(files[0] !== undefined) {
