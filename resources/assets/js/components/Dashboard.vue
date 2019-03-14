@@ -55,10 +55,10 @@
                         <v-img :title="editedItem.imageName" height="100" width="70" :src="editedItem.imageUrl"></v-img>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="priceRule"></v-text-field>
+                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="[priceRules.requiredLenth, priceRules.isNumber]"></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.retailPrice" name="retailPrice" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="priceRule"></v-text-field>
+                        <v-text-field v-model="editedItem.retailPrice" name="retailPrice" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="[priceRules.requiredLenth, priceRules.isNumber]"></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
                         <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
@@ -154,7 +154,13 @@
         selected: '',
         multiple: "true",
         errors: new Errors,
-        priceRule: [ v =>  v.toString().length <= 6 || 'Максимум 6 символов' ],
+        priceRules: {
+            requiredLenth: v =>  !!v ? v.toString().length <= 6 || 'Максимум 6 символов': true,
+            isNumber: v => {
+                const pattern = /^(\d*([.,](?=\d{3}))?\d+)+((?!\2)[.,]\d\d)?$/
+                return pattern.test(v) || 'Введите число';
+            }
+        },
         // isRequired: [ v => !!v || 'Артикул обязателен' ],
         allSizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37],
         headers: [
@@ -230,9 +236,15 @@
             this.$refs.image.click ()
         },
         isSku(inputValue){
+            // console.log(this.editedIndex);
+            // if (this.editedIndex > -1) {
+            //     return false;
+            // }
             let rule = this.products.find(o => o.sku === inputValue); 
             if(rule){
-                return 'Артикул существует'
+                return 'Артикул существует';
+            }else if (inputValue == ''){
+                return 'Артикул обязателен';
             }
             return false;
         },
