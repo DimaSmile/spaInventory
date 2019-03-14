@@ -55,10 +55,10 @@
                         <v-img :title="editedItem.imageName" height="100" width="70" :src="editedItem.imageUrl"></v-img>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="[priceRules.requiredLenth, priceRules.isNumber]"></v-text-field>
+                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" error-count="2" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="[priceRules.requiredLenth, priceRules.isNumber]"></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.retailPrice" name="retailPrice" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="[priceRules.requiredLenth, priceRules.isNumber]"></v-text-field>
+                        <v-text-field v-model="editedItem.retailPrice" name="retailPrice" error-count="2" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="[priceRules.requiredLenth, priceRules.isNumber]"></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
                         <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
@@ -94,7 +94,7 @@
       <template v-slot:items="props">
           <!-- <td>{{ props.item}}</td> -->
         <td>{{ props.item.name }} / {{ props.item.sku }}</td>
-        <td class="text-xs-center"><v-img height="186" width="126" :src="props.item.imageUrl"></v-img></td>
+        <td class="text-xs-center"><v-img class="centerimage" height="186" width="126" :src="props.item.imageUrl"></v-img></td>
         <td class="text-xs-center">{{ props.item.dropPrice }}</td>
         <td class="text-xs-center">{{ props.item.retailPrice }}</td>
         <td class="text-xs-center">
@@ -236,10 +236,11 @@
             this.$refs.image.click ()
         },
         isSku(inputValue){
-            // console.log(this.editedIndex);
-            // if (this.editedIndex > -1) {
-            //     return false;
-            // }
+            if (this.editedIndex > -1) {
+                if (this.products[this.editedIndex].sku === inputValue) {
+                    return false;
+                }
+            }
             let rule = this.products.find(o => o.sku === inputValue); 
             if(rule){
                 return 'Артикул существует';
@@ -375,6 +376,10 @@ input::-webkit-inner-spin-button {
 
 .inputPrice input[type='number'] {
     -moz-appearance: textfield;
+}
+
+.centerimage{
+    margin: 0 auto;
 }
 
 </style>
