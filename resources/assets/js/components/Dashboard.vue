@@ -55,11 +55,11 @@
                         <v-img :title="editedItem.imageName" height="100" width="70" :src="editedItem.imageUrl"></v-img>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model.trim.number="editedItem.dropPrice" @blur="resetValidation" name="dropPrice" error-count="2" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="[priceRules.requiredLenth]"></v-text-field>
+                        <v-text-field v-model.trim.number="editedItem.dropPrice" name="dropPrice" error-count="2" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="[priceRules.requiredLenth]"></v-text-field>
                     </v-flex>
-                    <!-- priceRules.isNumber -->
+                    <!-- priceRules.isNumber @blur="resetValidation" -->
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model.trim.number="editedItem.retailPrice" @blur="resetValidation" name="retailPrice" error-count="2" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="[priceRules.requiredLenth]"></v-text-field>
+                        <v-text-field v-model.trim.number="editedItem.retailPrice" name="retailPrice" error-count="2" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="[priceRules.requiredLenth]"></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
                         <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
