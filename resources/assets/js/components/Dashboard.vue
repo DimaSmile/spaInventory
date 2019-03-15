@@ -175,6 +175,7 @@
         products: [],
         editedIndex: -1,
         editedItem: {
+            id: '',
             name: '',
             sku: '',
             imageUrl: '',
@@ -184,6 +185,7 @@
             sizes: []
         },
         defaultItem: {
+            id: '',
             name: '',
             sku: '',
             imageUrl: '',
@@ -229,6 +231,19 @@
                 headers: { 'content-type': 'multipart/form-data' },
                 data: newProduct
             }).then((response) => {
+                console.log(11111);
+                console.log(response);
+            }).catch(error => this.errors.record(error.response.data));
+        },
+        updateProduct(formData){
+            this.axios.post( 'products/' + this.editedItem.id, formData
+            // {
+            //     url: 'products/' + this.editedItem.id,
+            //     method: 'patch',
+            //     headers: { 'content-type': 'multipart/form-data' },
+            //     data: formData 
+            // }
+            ).then((response) => {
                 console.log(2222);
                 console.log(response);
             }).catch(error => this.errors.record(error.response.data));
@@ -298,12 +313,16 @@
         save (event) {
             var formData = new FormData(event.target);
             // formData.append('image', this.image);//append data example
-            
             if (this.$refs.form.validate()) {
-                if (this.editedIndex > -1) {
+                if (this.editedIndex > -1) { //edit product
+                    formData.append('_method', 'PATCH');
                     // this.editProduct(formData);
+                    this.updateProduct(formData);
+                    console.log(this.editedItem);
+                    console.log(formData);
+
                     Object.assign(this.products[this.editedIndex], this.editedItem)
-                } else {
+                } else { //new product
                     this.createProduct(formData);
                     this.products.push(this.editedItem);
                 }

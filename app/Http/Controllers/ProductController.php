@@ -38,12 +38,6 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-
-        // if ($request->hasFile('image')) {
-        //     return 'true';
-        // }else{
-        //     return 'false';
-        // }
         try {
             $this->validate($request, [
                 'name'        => 'required',
@@ -111,7 +105,46 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        // echo 11111;exit;
+        // echo '<pre>';
+        // echo 11232123;
+        // var_dump($request->all());exit;
+        // var_dump($product);exit;
+        // var_dump($product);exit;
+        try {
+            $this->validate($request, [
+                'name'        => 'required',
+                // 'sku'         => 'unique:products|required',
+                'dropPrice'   => 'nullable|integer',
+                'retailPrice' => 'nullable|integer',
+                'image'       => 'image|mimes:jpeg,png,jpg,gif,svg'//required
+            ]);
+        } catch (ValidationException $exception) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Error',
+                'errors'  => $exception->errors(),
+            ], 422);
+        }
+
+        if ($request->hasFile('image')) {
+            $imageName = $request->image->getClientOriginalName();
+            $imagePath = $request->image->store('uploads', 'public');//use storeAs for specify filename
+            $product->image_name = $imageName;
+            $product->image_url = $imagePath;
+        }
+        $product->name = $request->name;
+        $product->sku = $request->sku;
+        $product->drop_price = $request->dropPrice;
+
+        $product->retail_price = $request->retailPrice;
+        
+        // $product->category_id = 1;
+        $product->save();
+
+        return $product;
+        // $product->update($request->all());
+
     }
 
     /**
