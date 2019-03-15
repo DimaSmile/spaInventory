@@ -55,10 +55,11 @@
                         <v-img :title="editedItem.imageName" height="100" width="70" :src="editedItem.imageUrl"></v-img>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.dropPrice" name="dropPrice" error-count="2" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="[priceRules.requiredLenth, priceRules.isNumber]"></v-text-field>
+                        <v-text-field v-model.trim.number="editedItem.dropPrice" @blur="resetValidation" name="dropPrice" error-count="2" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="[priceRules.requiredLenth]"></v-text-field>
                     </v-flex>
+                    <!-- priceRules.isNumber -->
                     <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.retailPrice" name="retailPrice" error-count="2" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="[priceRules.requiredLenth, priceRules.isNumber]"></v-text-field>
+                        <v-text-field v-model.trim.number="editedItem.retailPrice" @blur="resetValidation" name="retailPrice" error-count="2" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="[priceRules.requiredLenth]"></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6 md4>
                         <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
@@ -155,11 +156,11 @@
         multiple: "true",
         errors: new Errors,
         priceRules: {
-            requiredLenth: v =>  !!v ? v.toString().length <= 6 || 'Максимум 6 символов': true,
-            isNumber: v => {
-                const pattern = /^(\d*([.,](?=\d{3}))?\d+)+((?!\2)[.,]\d\d)?$/
-                return pattern.test(v) || 'Введите число';
-            }
+            requiredLenth: v => !!v ? v.toString().length <= 6 || 'Максимум 6 символов': true,
+            // isNumber: v => {
+            //     const pattern = /^(\d*([.,](?=\d{3}))?\d+)+((?!\2)[.,]\d\d)?$/
+            //     return v ? pattern.test(v) || 'Введите число' : true;
+            // }
         },
         // isRequired: [ v => !!v || 'Артикул обязателен' ],
         allSizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37],
@@ -276,6 +277,7 @@
             }
         },
         editItem (item) {
+            this.$refs.form.resetValidation()
             this.editedIndex = this.products.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
@@ -285,6 +287,7 @@
             confirm('Вы уверены что хотите удалить этот продукт?') && this.products.splice(index, 1)
         },
         close () {
+            this.$refs.form.resetValidation()
             this.dialog = false
             //URL.revokeObjectURL(this.editedItem.imageUrl);// освобождает URL-объект
             setTimeout(() => {
