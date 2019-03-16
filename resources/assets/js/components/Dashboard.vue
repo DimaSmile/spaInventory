@@ -117,7 +117,7 @@
           </v-icon>
           <v-icon
             small
-            @click="deleteItem(props.item)"
+            @click="deleteProduct(props.item)"
           >
             delete
           </v-icon>
@@ -248,6 +248,22 @@
                 console.log(response);
             }).catch(error => this.errors.record(error.response.data));
         },
+        deleteProduct(product){
+            let prodId = product.id;
+            const index = this.products.indexOf(product);
+            let remove = confirm('Вы уверены что хотите удалить этот продукт?');
+
+            if(remove){
+                this.axios.delete('products/' + prodId)
+                .then((response) => {
+                    console.log(response);
+                    this.products.splice(index, 1)
+                }).catch((error) => {
+                    this.errors.record(error.response.data)
+                    alert("Product not removed")
+                });
+            }
+        },
         pickFile (event) {
             this.$refs.image.click ()
         },
@@ -297,10 +313,12 @@
             this.editedItem = Object.assign({}, item)
             this.dialog = true
         },
-        deleteItem (item) {
-            const index = this.products.indexOf(item)
-            confirm('Вы уверены что хотите удалить этот продукт?') && this.products.splice(index, 1)
-        },
+        // deleteItem (item) {
+        //     console.log(item);debugger;
+        //     deleteProduct(item);
+        //     const index = this.products.indexOf(item)
+        //     confirm('Вы уверены что хотите удалить этот продукт?') && this.products.splice(index, 1)
+        // },
         close () {
             this.$refs.form.resetValidation()
             this.dialog = false
