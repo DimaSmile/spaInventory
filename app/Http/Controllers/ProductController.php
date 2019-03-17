@@ -41,7 +41,7 @@ class ProductController extends Controller
         try {
             $this->validate($request, [
                 'name'        => 'required',
-                'sku'         => 'unique:products|required',
+                // 'sku'         => 'unique:products|required',
                 'dropPrice'   => 'nullable|integer',
                 'retailPrice' => 'nullable|integer',
                 'image'       => 'image|mimes:jpeg,png,jpg,gif,svg'//required

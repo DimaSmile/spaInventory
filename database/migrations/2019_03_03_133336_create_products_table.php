@@ -17,7 +17,7 @@ class CreateProductsTable extends Migration
             $table->increments('id');
 
             $table->string('name');
-            $table->string('sku')->unique();
+            $table->string('sku')->unique()->nullable();
 
             $table->float('drop_price')->nullable();
             $table->float('retail_price')->nullable();

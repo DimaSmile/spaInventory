@@ -25,7 +25,7 @@
                         <v-text-field v-model="editedItem.name" name="name" label="Наименование" :rules="[v => !!v || 'Имя обязательно']" required></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6>
-                        <v-text-field v-model="editedItem.sku" name="sku" label="Артикул" :rules="[isSku]" required></v-text-field> <!-- isRequired -->
+                        <v-text-field v-model="editedItem.sku" name="sku" label="Артикул" :rules="[isSku]"></v-text-field> <!-- required -->
                     </v-flex>
                     <v-flex xs12 sm6>
                         <!-- <v-text-field v-model="editedItem.imageName" hint="Выберите изображение" persistent-hint label="" @click='pickFile' prepend-icon='attach_file'></v-text-field> -->
@@ -283,9 +283,11 @@
             let rule = this.products.find(o => o.sku === inputValue); 
             if(rule){
                 return 'Артикул существует';
-            }else if (inputValue == ''){
-                return 'Артикул обязателен';
             }
+            //if you need required field
+            // else if (inputValue == ''){
+            //     return 'Артикул обязателен';
+            // }
             return false;
         },
         resetValidation () {
@@ -337,15 +339,16 @@
         },
         save (event) {
             var formData = new FormData(event.target);
+            this.editedItem.sku = this.isEmptyOrSpaces(this.editedItem.sku);
+            // formData.append('sku', this.editedItem.sku);
+
             // formData.append('image', this.image);//append data example
+
             if (this.$refs.form.validate()) {
                 if (this.editedIndex > -1) { //edit product
                     formData.append('_method', 'PATCH');
                     // this.editProduct(formData);
                     this.updateProduct(formData);
-                    console.log(this.editedItem);
-                    console.log(formData);
-
                     Object.assign(this.products[this.editedIndex], this.editedItem)
                 } else { //new product
                     this.createProduct(formData);
@@ -353,6 +356,13 @@
                 }
                 this.close()
             }
+        },
+        isEmptyOrSpaces(str){
+            if (str === null || str.match(/^ *$/) !== null){
+                str = null
+                return str;
+            }
+            return str;
         }
     }
   }
