@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar flat color="white">
-      <v-toolbar-title>Текущая категория</v-toolbar-title>
+      <v-toolbar-title>{{$route.params.category_id}} {{ $route.params.category_name }}</v-toolbar-title>
       <!-- <v-divider
         class="mx-2"
         inset
@@ -147,6 +147,11 @@
     }
   }
   export default {
+    // props: ['category_id' ,'category_name'],
+    // props: {
+    //     category_id: Number,
+    //     category_name: String
+    // },
     data: () => ({
         loader: null,
         loading3: false,
@@ -155,6 +160,8 @@
         selected: '',
         multiple: "true",
         errors: new Errors,
+        categoryId: '',
+        categoryName: '',
         priceRules: {
             requiredLenth: v => !!v ? v.toString().length <= 6 || 'Максимум 6 символов': true,
             // isNumber: v => {

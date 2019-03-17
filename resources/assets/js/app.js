@@ -44,9 +44,10 @@ const router = new VueRouter({
             auth: false
         }
     },{
-        path: '/dashboard',
+        path: '/dashboard/:category_id?/:category_name?',
         name: 'dashboard',
         component: Dashboard,
+        props: true,
         meta: {
             auth: true
         }

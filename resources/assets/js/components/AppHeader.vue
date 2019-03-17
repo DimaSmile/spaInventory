@@ -12,6 +12,7 @@
             <v-spacer></v-spacer>
 
             <v-toolbar-items class="hidden-sm-and-down">
+                <v-btn v-for="category in categories" :key="category.id" :to="{ name: 'dashboard', params: { category_id: category.id, category_name: category.name }}" flat>{{ category.name }}</v-btn>
                 <v-btn :to="{ name: 'home' }" flat>home</v-btn>
                 <v-btn v-if="!$auth.check()" :to="{ name: 'login' }" flat>Login</v-btn>
 
@@ -22,34 +23,27 @@
             </v-toolbar-items>
         </v-toolbar>
     </div>
-    <!-- <div class="panel panel-default">
-        <div class="panel-heading">
-            <nav>
-                <ul class="list-inline">
-                    <li>
-                        <router-link :to="{ name: 'home' }">Home</router-link>
-                    </li>
-                    <li v-if="!$auth.check()" class="pull-right">
-                        <router-link :to="{ name: 'login' }">Login</router-link>
-                    </li>
-                    <li v-if="!$auth.check()" class="pull-right">
-                        <router-link :to="{ name: 'register' }">Register</router-link>
-                    </li>
-                    <li v-if="$auth.check()" class="pull-right">
-                        <a href="#" @click.prevent="$auth.logout()">Logout</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <div class="panel-body">
-            <router-view></router-view>
-        </div>
-    </div> -->
 </template>
 
 <script>
     export default {
-        
+        data(){
+            return {
+                categories: null,
+            }
+        },
+        created () { //inside hook 'created' recommended do fetching data
+            this.getCategories();
+        },
+        methods: {
+            getCategories(){
+                this.axios.get('categories').then((response) => {
+                    this.categories = response.data;
+                    console.log(this.categories);
+                    
+                })
+            }
+        },
     }
 </script>
 
