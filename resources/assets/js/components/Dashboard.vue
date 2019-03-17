@@ -9,123 +9,169 @@
       ></v-divider> -->
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" max-width="500px">
-        <template v-slot:activator="{ on }">
-          <v-btn color="grey darken-3" dark class="mb-2" v-on="on">Новый продукт</v-btn>
-        </template>
+            <template v-slot:activator="{ on }">
+                <v-btn v-on="on"
+                       color="grey darken-3"
+                       dark
+                       class="mb-2">
+                    Новый продукт
+                </v-btn>
+            </template>
         <v-card>
           <v-card-title>
             <span class="headline">{{ formTitle }}</span>
           </v-card-title>
 
-        <v-form  @submit.prevent="save" ref="form" id="formId" method="post" v-model="valid" lazy-validation>
-          <v-card-text>
-            <v-container grid-list-md>
-                <v-layout wrap>
-                    <v-flex xs12 sm6>
-                        <v-text-field v-model="editedItem.name" name="name" label="Наименование" :rules="[v => !!v || 'Имя обязательно']" required></v-text-field>
-                    </v-flex>
-                    <v-flex xs12 sm6>
-                        <v-text-field v-model="editedItem.sku" name="sku" label="Артикул" :rules="[isSku]"></v-text-field> <!-- required -->
-                    </v-flex>
-                    <v-flex xs12 sm6>
-                        <!-- <v-text-field v-model="editedItem.imageName" hint="Выберите изображение" persistent-hint label="" @click='pickFile' prepend-icon='attach_file'></v-text-field> -->
-                        <v-btn
-                            :loading="loading3"
-                            :disabled="loading3"
-                            color="grey darken-3"
-                            class="white--text"
-                            @click="pickFile"
-                            depressed
-                        >
-                            Загрузить
-                            <v-icon right dark>cloud_upload</v-icon>
+        <v-form @submit.prevent="save"
+                ref="form"
+                id="formId"
+                method="post"
+                v-model="valid"
+                lazy-validation>
+            <v-card-text>
+                <v-container grid-list-md>
+                    <v-layout wrap>
+                        <v-flex xs12 sm6>
+                            <v-text-field v-model="editedItem.name"
+                                          name="name"
+                                          label="Наименование"
+                                          :rules="[v => !!v || 'Имя обязательно']"
+                                          required>
+                            </v-text-field>
+                        </v-flex>
+                        <v-flex xs12 sm6>
+                            <v-text-field v-model="editedItem.sku"
+                                          name="sku"
+                                          label="Артикул"
+                                          :rules="[isSku]">
+                            </v-text-field> <!-- required -->
+                        </v-flex>
+                        <v-flex xs12 sm6>
+                            <!-- <v-text-field v-model="editedItem.imageName" hint="Выберите изображение" persistent-hint label="" @click='pickFile' prepend-icon='attach_file'></v-text-field> -->
+                            <v-btn @click="pickFile" 
+                                   :loading="loading3"
+                                   :disabled="loading3"
+                                   color="grey darken-3"
+                                   class="white--text"
+                                   depressed>
+                                Загрузить
+                                <v-icon right dark>cloud_upload</v-icon>
                             </v-btn>
-                            <p class="text-md-left">{{ editedItem.imageName ? editedItem.imageName : 'Выберите изображение'}}</p>
-                        <input 
-                            type="file"
-                            style="display: none"
-                            ref="image"
-                            name="image"
-                            accept="image/*"
-                            id="image-upload"
-                            @change="onFilePicked"
-                        >
-                    </v-flex>
-                    <v-flex xs12 sm6>
-                        <v-img :title="editedItem.imageName" height="100" width="70" :src="editedItem.imageUrl"></v-img>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-text-field v-model.trim.number="editedItem.dropPrice" name="dropPrice" error-count="2" class="inputPrice" label="Цена дроп" type="number" :counter="6" :rules="[priceRules.requiredLenth]"></v-text-field>
-                    </v-flex>
-                    <!-- priceRules.isNumber @blur="resetValidation" -->
-                    <v-flex xs12 sm6 md4>
-                        <v-text-field v-model.trim.number="editedItem.retailPrice" name="retailPrice" error-count="2" class="inputPrice" label="Цена розница" type="number" :counter="6" :rules="[priceRules.requiredLenth]"></v-text-field>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
-                        <v-select
-                            v-model="editedItem.sizes"
-                            :items="allSizes"
-                            :menu-props="{ maxHeight: '400' }"
-                            label="Размеры"
-                            multiple
-                            hint="Выберите размеры"
-                            persistent-hint
-                        ></v-select>
-                    </v-flex>
-                </v-layout>
-            </v-container>
-          </v-card-text>
+                            <p class="text-md-left">
+                                {{ editedItem.imageName ? editedItem.imageName : 'Выберите изображение'}}
+                            </p>
+                            <input @change="onFilePicked" 
+                                   type="file"
+                                   style="display: none"
+                                   ref="image"
+                                   name="image"
+                                   accept="image/*"
+                                   id="image-upload">
+                        </v-flex>
+                        <v-flex xs12 sm6>
+                            <v-img :title="editedItem.imageName"
+                                   :src="editedItem.imageUrl"
+                                   height="100"
+                                   width="70">
+                            </v-img>
+                        </v-flex>
+                        <v-flex xs12 sm6 md4>
+                            <v-text-field v-model.trim.number="editedItem.dropPrice"
+                                          name="dropPrice"
+                                          error-count="2"
+                                          class="inputPrice"
+                                          label="Цена дроп"
+                                          type="number"
+                                          :counter="6"
+                                          :rules="[priceRules.requiredLenth]">
+                            </v-text-field>
+                        </v-flex>
+                        <!-- priceRules.isNumber @blur="resetValidation" -->
+                        <v-flex xs12 sm6 md4>
+                            <v-text-field v-model.trim.number="editedItem.retailPrice"
+                                          name="retailPrice"
+                                          error-count="2"
+                                          class="inputPrice"
+                                          label="Цена розница"
+                                          type="number"
+                                          :counter="6"
+                                          :rules="[priceRules.requiredLenth]">
+                            </v-text-field>
+                        </v-flex>
+                        <v-flex xs12 sm6 md4>
+                            <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
+                            <v-select v-model="editedItem.sizes"
+                                      :items="allSizes"
+                                      :menu-props="{ maxHeight: '400' }"
+                                      label="Размеры"
+                                      multiple
+                                      hint="Выберите размеры"
+                                      persistent-hint>
+                            </v-select>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
+            </v-card-text>
 
         </v-form>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="error" flat @click="close">Отмена</v-btn>
-            <v-btn type="submit" :disabled="!valid" form="formId" color="success" flat>Сохранить</v-btn>
-            
+            <v-btn @click="close"
+                   color="error"
+                   flat>
+                Отмена
+            </v-btn>
+            <v-btn :disabled="!valid"
+                   type="submit"
+                   form="formId"
+                   color="success"
+                   flat>
+                Сохранить
+            </v-btn>
         </v-card-actions>
         </v-card>
       </v-dialog>
     </v-toolbar>
-    <v-data-table
-      :headers="headers"
-      :items="products"
-      class="elevation-1"
-    >
-      <template v-slot:items="props">
-          <!-- <td>{{ props.item}}</td> -->
-        <td>{{ props.item.name }} / {{ props.item.sku }}</td>
-        <td class="text-xs-center"><v-img class="centerimage" height="186" width="126" :src="props.item.imageUrl"></v-img></td>
-        <td class="text-xs-center">{{ props.item.dropPrice }}</td>
-        <td class="text-xs-center">{{ props.item.retailPrice }}</td>
-        <td class="text-xs-center">
-            <select size="8" multiple disabled>
-                <option  v-for="(size, key) in allSizes" :value="size" :key="key + props.item.name"
-                v-bind:style="[props.item.sizes.includes(size) ? {'background' :'green' } : {'background' :'red' }]"
-                >
-                {{ size }}
-                </option>
-            </select>
-        </td>
-        <td class="justify-center layout px-0">
-          <v-icon
-            small
-            class="mr-2"
-            @click="editItem(props.item)"
-          >
-            edit
-          </v-icon>
-          <v-icon
-            small
-            @click="deleteProduct(props.item)"
-          >
-            delete
-          </v-icon>
-        </td>
-      </template>
-      <!-- <template v-slot:no-data>
-        <v-btn color="grey darken-3" @click="initialize">Сброс</v-btn>
-      </template> -->
+    <v-data-table :headers="headers"
+                  :items="products"
+                  class="elevation-1">
+        <template v-slot:items="props">
+            <!-- <td>{{ props.item}}</td> -->
+            <td>{{ props.item.name }} / {{ props.item.sku }}</td>
+            <td class="text-xs-center">
+                <v-img class="centerimage"
+                    height="186"
+                    width="126"
+                    :src="props.item.imageUrl">
+                </v-img>
+            </td>
+            <td class="text-xs-center">{{ props.item.dropPrice }}</td>
+            <td class="text-xs-center">{{ props.item.retailPrice }}</td>
+            <td class="text-xs-center">
+                <select size="8" multiple disabled>
+                    <option v-for="(size, key) in allSizes"
+                            :value="size"
+                            :key="key + props.item.name"
+                            :style="[props.item.sizes.includes(size) ? {'background' :'green' } : {'background' :'red' }]">
+                        {{ size }}
+                    </option>
+                </select>
+            </td>
+            <td class="justify-center layout px-0">
+                <v-icon @click="editProductForm(props.item)"
+                        small
+                        class="mr-2">
+                    edit
+                </v-icon>
+                <v-icon @click="deleteProduct(props.item)"
+                        small>
+                    delete
+                </v-icon>
+            </td>
+        </template>
+        <!-- <template v-slot:no-data>
+            <v-btn color="grey darken-3" @click="initialize">Сброс</v-btn>
+        </template> -->
     </v-data-table>
   </div>
 </template>
@@ -218,18 +264,29 @@
             setTimeout(() => (this[l] = false), 500)
 
             this.loader = null
-        }
+        },
         // при изменениях маршрута запрашиваем данные снова
-        // '$route': 'fetchData'
+        '$route': 'fetchData'
     },
     created () { //inside hook 'created' recommended do fetching data
+            // from router vuejs documentation
+            // fetch the data when the view is created and the data is
+            // already being observed
         this.fetchData();
     },
     methods: {
         fetchData(){
-            this.axios.get('products').then((response) => {
-                this.products = response.data;
-            })
+            if(this.$route.params.category_id){
+                this.axios.get('categories/'+ this.$route.params.category_id).then((response) => {
+                    console.log(response.data);
+                    
+                    this.products = response.data;
+                })
+            }else{
+                this.axios.get('products').then((response) => {
+                    this.products = response.data;
+                })
+            }
         },
         createProduct(newProduct){
             this.axios({
@@ -238,8 +295,8 @@
                 headers: { 'content-type': 'multipart/form-data' },
                 data: newProduct
             }).then((response) => {
-                console.log(11111);
-                console.log(response);
+                // console.log(response);
+                this.products.push(this.editedItem);
             }).catch(error => this.errors.record(error.response.data));
         },
         updateProduct(formData){
@@ -251,8 +308,8 @@
             //     data: formData 
             // }
             ).then((response) => {
-                console.log(2222);
-                console.log(response);
+                // console.log(response);
+                Object.assign(this.products[this.editedIndex], this.editedItem)
             }).catch(error => this.errors.record(error.response.data));
         },
         deleteProduct(product){
@@ -263,7 +320,7 @@
             if(remove){
                 this.axios.delete('products/' + prodId)
                 .then((response) => {
-                    console.log(response);
+                    // console.log(response);
                     this.products.splice(index, 1)
                 }).catch((error) => {
                     this.errors.record(error.response.data)
@@ -316,7 +373,7 @@
                 this.editedItem.imageUrl = '';
             }
         },
-        editItem (item) {
+        editProductForm (item) {
             this.$refs.form.resetValidation()
             this.editedIndex = this.products.indexOf(item)
             this.editedItem = Object.assign({}, item)
@@ -341,25 +398,20 @@
             var formData = new FormData(event.target);
             this.editedItem.sku = this.isEmptyOrSpaces(this.editedItem.sku);
             // formData.append('sku', this.editedItem.sku);
-
-            // formData.append('image', this.image);//append data example
-
             if (this.$refs.form.validate()) {
                 if (this.editedIndex > -1) { //edit product
                     formData.append('_method', 'PATCH');
                     // this.editProduct(formData);
                     this.updateProduct(formData);
-                    Object.assign(this.products[this.editedIndex], this.editedItem)
                 } else { //new product
                     this.createProduct(formData);
-                    this.products.push(this.editedItem);
                 }
                 this.close()
             }
         },
         isEmptyOrSpaces(str){
             if (str === null || str.match(/^ *$/) !== null){
-                str = null
+                str = null;
                 return str;
             }
             return str;
@@ -368,7 +420,7 @@
   }
 </script>
 
-<style scope>
+<style>
 
 select {
     padding: 3px;
@@ -438,5 +490,4 @@ input::-webkit-inner-spin-button {
 .centerimage{
     margin: 0 auto;
 }
-
 </style>
