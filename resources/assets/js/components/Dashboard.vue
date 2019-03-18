@@ -279,12 +279,13 @@
             if(this.$route.params.category_id){
                 this.axios.get('categories/'+ this.$route.params.category_id).then((response) => {
                     console.log(response.data);
-                    
+                    // console.log(555555);debugger
                     this.products = response.data;
                 })
             }else{
                 this.axios.get('products').then((response) => {
                     this.products = response.data;
+                    // console.log(this.products);debugger;
                 })
             }
         },

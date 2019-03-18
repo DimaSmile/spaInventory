@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Category;
 use Illuminate\Http\Request;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ProductResource;
 
 class CategoryController extends Controller
 {
@@ -48,7 +49,17 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        return new CategoryResource($category);
+        $catProducts = $category->products;
+        // $sql = $category->join('products', 'categories.id', '=' , 'products.category_id')->where('products.category_id', '=', $category->id);
+        // $specCategory = $category->join('products', 'categories.id', '=' , 'products.category_id')
+        //                          ->where('products.category_id', '=', $category->id)
+        //                          ->select('products.name', 'products.drop_price', 'products.drop_price', 'products.retail_price', 'products.sku', 'products.id', 'categories.category_id' )
+        //                          ->get();
+        
+        // echo '<pre>';
+        // var_dump($catProducts);exit;
+        // dd($sql->toSql());exit;
+        return ProductResource::collection($catProducts);
     }
 
     /**
