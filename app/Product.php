@@ -23,4 +23,14 @@ class Product extends Model
             $this->attributes['sku'] = $value;
         }
     }
+
+    //получаем все размеры определенного аттрибут сета
+    // SELECT attributes.attribute_name, GROUP_CONCAT(sizes.size_name) FROM attributes JOIN sizes_attributes ON attributes.id = sizes_attributes.attribute_id JOIN sizes ON sizes.id =  sizes_attributes.size_id WHERE attributes.id = 1 GROUP BY attributes.id;
+
+    //выборка всех продуктов с определенным сетом размеров, вместе с этими размерами
+    // SELECT products.*, attributes.attribute_name, GROUP_CONCAT(sizes.size_name) FROM products JOIN attributes ON products.attribute_id = attributes.id JOIN sizes_attributes ON attributes.id = sizes_attributes.attribute_id JOIN sizes ON sizes.id = sizes_attributes.size_id WHERE attributes.id = 1 GROUP BY products.id
+
+
+    // fail
+    // INSERT INTO products_sizes (product_id, products_attribute_id,  size_id) SELECT 1, 2, 5  WHERE (SELECT products.attribute_id FROM products WHERE products.id = 1) = (SELECT sizes_attributes.attribute_id FROM sizes_attributes JOIN sizes ON sizes_attributes.size_id = sizes.id WHERE sizes.id = 5);
 }
