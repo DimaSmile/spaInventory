@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Product extends Model
 {
@@ -24,8 +25,18 @@ class Product extends Model
         }
     }
 
+    public function getCreatedAtAttribute($date)
+    {
+        return Carbon::createFromFormat('Y-m-d H:i:s', $date)->format('Y-m-d H:i');
+    }
+
+    public function getUpdatedAtAttribute($date)
+    {
+        return Carbon::createFromFormat('Y-m-d H:i:s', $date)->format('Y-m-d H:i');
+    }
+
     //получаем все размеры определенного аттрибут сета
-    // SELECT attributes.attribute_name, GROUP_CONCAT(sizes.size_name) FROM attributes JOIN sizes_attributes ON attributes.id = sizes_attributes.attribute_id JOIN sizes ON sizes.id =  sizes_attributes.size_id WHERE attributes.id = 1 GROUP BY attributes.id;
+    // SELECT a.attribute_name, GROUP_CONCAT(s.size_name) FROM attributes a JOIN sizes_attributes sa ON a.id = sa.attribute_id JOIN sizes s ON sa.size_id = s.id GROUP BY a.attribute_name
 
     //выборка всех продуктов с определенным сетом размеров, вместе с этими размерами
     // SELECT products.*, attributes.attribute_name, GROUP_CONCAT(sizes.size_name) FROM products JOIN attributes ON products.attribute_id = attributes.id JOIN sizes_attributes ON attributes.id = sizes_attributes.attribute_id JOIN sizes ON sizes.id = sizes_attributes.size_id WHERE attributes.id = 1 GROUP BY products.id

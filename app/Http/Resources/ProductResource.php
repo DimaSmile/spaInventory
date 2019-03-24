@@ -28,10 +28,10 @@ class ProductResource extends Resource
                 'imageUrl' => $imageUrl,
                 'sizes' => [29, 30 , 31, 32, 33, 34, 35, 36, 37],
                 'category_id' => $this->category_id,
+                'datetime' => $this->updated_at,
                 // 'image_name' => $this->image_name,
                 // 'category_id' => $this->category_id,
                 // 'created_at' => $this->created_at,
-                // 'updated_at' => $this->updated_at,
             ];
         // return parent::toArray($request);
     }

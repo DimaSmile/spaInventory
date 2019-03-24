@@ -3,7 +3,7 @@ import VueRouter from 'vue-router';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import App from './App.vue';
-import Dashboard from './components/Dashboard.vue';
+// import Dashboard from './components/Dashboard.vue';
 import Home from './components/Home.vue';
 import Register from './components/Register.vue';
 import Login from './components/Login.vue';
@@ -23,9 +23,10 @@ axios.defaults.baseURL = 'http://inventory.loc:80/api';
 const router = new VueRouter({
     mode: 'history',
     routes: [{
-        path: '/',
+        path: '/:category_id?/:category_name?',
         name: 'home',
-        component: Home
+        component: Home,
+        props: true
     },
     //if you want enable registration uncomment this block
     {
@@ -43,15 +44,17 @@ const router = new VueRouter({
         meta: {
             auth: false
         }
-    },{
-        path: '/dashboard/:category_id?/:category_name?',
-        name: 'dashboard',
-        component: Dashboard,
-        props: true,
-        meta: {
-            auth: true
-        }
-    }]
+    },
+    // {
+    //     path: '/dashboard/:category_id?/:category_name?',
+    //     name: 'dashboard',
+    //     component: Dashboard,
+    //     props: true,
+    //     // meta: {
+    //     //     auth: true
+    //     // }
+    // }
+    ]
 });
 
 // new Vue({
