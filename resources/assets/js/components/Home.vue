@@ -305,17 +305,24 @@
         fetchData(){
             this.categoryId = this.$route.params.category_id;
             this.categoryName = this.$route.params.category_name;
+            if( !(this.categoryId && this.categoryName)){
+                this.categoryId = 1;
+                this.categoryName = 'Джинсы';
+                this.$router.push({ name: 'home', params: { category_id: this.categoryId, category_name: this.categoryName }});
+                return
+            }
             if(this.categoryId){
-                this.axios.get('categories/'+ this.$route.params.category_id).then((response) => {
+                this.axios.get('categories/'+ this.categoryId).then((response) => {
                     // console.log(response.data);
                     this.products = response.data;
                 })
-            }else{
-                this.axios.get('products').then((response) => {
-                    this.products = response.data;
-                    // console.log(this.products);debugger;
-                })
             }
+            // else{
+            //     this.axios.get('products').then((response) => {
+            //         this.products = response.data;
+            //         // console.log(this.products);debugger;
+            //     })
+            // }
         },
         createProduct(newProduct){
             this.axios({
