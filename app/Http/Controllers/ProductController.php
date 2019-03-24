@@ -62,13 +62,13 @@ class ProductController extends Controller
             $newProduct->image_name = $imageName;
             $newProduct->image_url = $imagePath;
         }
+
         $newProduct->name = $request->name;
         $newProduct->sku = $request->sku;
         $newProduct->drop_price = $request->dropPrice;
-
         $newProduct->retail_price = $request->retailPrice;
+        $newProduct->category_id = $request->category_id;
         
-        $newProduct->category_id = 1;
         $newProduct->save();
 
         return $newProduct;

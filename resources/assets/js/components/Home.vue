@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar flat color="white">
-      <v-toolbar-title>{{$route.params.category_id}} {{ $route.params.category_name }}</v-toolbar-title>
+      <v-toolbar-title>{{ categoryId }} {{ categoryName }}</v-toolbar-title>
       <!-- <v-divider
         class="mx-2"
         inset
@@ -212,8 +212,7 @@
         pagination : {
             'sortBy': 'datetime',
             'descending': true,
-            'rowsPerPage': 5,
-            // rowsPerPageItems : []
+            'rowsPerPage': 10,
         },
         priceRules: {
             requiredLenth: v => !!v ? v.toString().length <= 6 || 'Максимум 6 символов': true,
@@ -235,6 +234,8 @@
             imageName: '',
             dropPrice: '',
             retailPrice: '',
+            categoryId: '',
+            categoryName: '',
             sizes: []
         },
         defaultItem: {
@@ -246,6 +247,8 @@
             imageName: '',
             dropPrice: '',
             retailPrice: '',
+            categoryId: '',
+            categoryName: '',
             sizes: []
         }
     }),
@@ -259,7 +262,7 @@
         headers(){
             return this.isAuth ?
             [
-                { text: 'Date', value: 'datetime' },
+                { text: 'Date', value: 'datetime', sortable: true },
                 { text: 'Изображение', align: 'center', value: 'imageUrl', sortable: false },
                 { text: 'Наименование / Артикул', align: 'left', sortable: false, value: 'name'},
                 { text: 'Цена дроп', align: 'center', sortable: false, value: 'dropPrice' },
@@ -268,7 +271,7 @@
                 { text: 'Действие', value: 'action', sortable: false }
             ]:
             [
-                { text: 'Date', value: '2019-03-23 23:10:18' },
+                { text: 'Date', value: 'datetime' , sortable: true },
                 { text: 'Изображение', align: 'center', value: 'imageUrl', sortable: false },
                 { text: 'Наименование / Артикул', align: 'left', sortable: false, value: 'name'},
                 { text: 'Цена дроп', align: 'center', sortable: false, value: 'dropPrice' },
@@ -300,9 +303,11 @@
     },
     methods: {
         fetchData(){
-            if(this.$route.params.category_id){
+            this.categoryId = this.$route.params.category_id;
+            this.categoryName = this.$route.params.category_name;
+            if(this.categoryId){
                 this.axios.get('categories/'+ this.$route.params.category_id).then((response) => {
-                    console.log(response.data);
+                    // console.log(response.data);
                     this.products = response.data;
                 })
             }else{
@@ -319,7 +324,7 @@
                 headers: { 'content-type': 'multipart/form-data' },
                 data: newProduct
             }).then((response) => {
-                // console.log(response);
+                // console.log(response.data);
                 this.editedItem.datetime = response.data.updated_at
                 this.products.push(this.editedItem);
             }).catch(error => this.errors.record(error.response.data));
@@ -334,9 +339,9 @@
             // }
             ).then((response) => {
                 console.log(response.data.updated_at);
-                this.editedItem.datetime = response.data.updated_at
+                this.editedItem.datetime = response.data.updated_at;
                 console.log(this.editedItem);
-                Object.assign(this.products[this.editedIndex], this.editedItem)
+                Object.assign(this.products[this.editedIndex], this.editedItem);
             }).catch(error => this.errors.record(error.response.data));
         },
         deleteProduct(product){
@@ -348,15 +353,15 @@
                 this.axios.delete('products/' + prodId)
                 .then((response) => {
                     // console.log(response);
-                    this.products.splice(index, 1)
+                    this.products.splice(index, 1);
                 }).catch((error) => {
-                    this.errors.record(error.response.data)
-                    alert("Product not removed")
+                    this.errors.record(error.response.data);
+                    alert("Product not removed");
                 });
             }
         },
         pickFile (event) {
-            this.$refs.image.click ()
+            this.$refs.image.click ();
         },
         isSku(inputValue){
             if (this.editedIndex > -1) {
@@ -375,19 +380,19 @@
             return false;
         },
         resetValidation () {
-            this.$refs.form.resetValidation()
+            this.$refs.form.resetValidation();
         },
         onFilePicked (e) {
-            const files = e.target.files
+            const files = e.target.files;
             if(files[0] !== undefined) {
-                this.editedItem.imageName = files[0].name
+                this.editedItem.imageName = files[0].name;
                 if(this.editedItem.imageName <= 0) {
                     return
                 }
 
                 // const fileReader = new FileReader ()
                 // diff beetween FileReader.readAsDataURL and URL.createObjectURL
-                this.loader = 'loading3'
+                this.loader = 'loading3';
 
                 // fileReader.addEventListener('load', () => {
                 //     this.editedItem.imageUrl = fileReader.result;//result содержит данные после чтения файла методом readAsDataURL
@@ -401,10 +406,10 @@
             }
         },
         editProductForm (item) {
-            this.$refs.form.resetValidation()
-            this.editedIndex = this.products.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialog = true
+            this.$refs.form.resetValidation();
+            this.editedIndex = this.products.indexOf(item);
+            this.editedItem = Object.assign({}, item);
+            this.dialog = true;
         },
         // deleteItem (item) {
         //     console.log(item);debugger;
@@ -413,17 +418,20 @@
         //     confirm('Вы уверены что хотите удалить этот продукт?') && this.products.splice(index, 1)
         // },
         close () {
-            this.$refs.form.resetValidation()
-            this.dialog = false
+            this.$refs.form.resetValidation();
+            this.dialog = false;
             //URL.revokeObjectURL(this.editedItem.imageUrl);// освобождает URL-объект
             setTimeout(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
+                this.editedItem = Object.assign({}, this.defaultItem);
             this.editedIndex = -1
             }, 300)
         },
         save (event) {
             var formData = new FormData(event.target);
             this.editedItem.sku = this.isEmptyOrSpaces(this.editedItem.sku);
+            this.editedItem.categoryId = this.categoryId;
+            console.log(event.target);debugger;
+            
             // formData.append('sku', this.editedItem.sku);
             if (this.$refs.form.validate()) {
                 if (this.editedIndex > -1) { //edit product
@@ -431,6 +439,7 @@
                     // this.editProduct(formData);
                     this.updateProduct(formData);
                 } else { //new product
+                    formData.append('category_id', this.editedItem.categoryId);
                     this.createProduct(formData);
                 }
                 this.close()
