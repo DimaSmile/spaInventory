@@ -20,8 +20,8 @@ class ProductResource extends Resource
         $imageUrl = 'http://via.placeholder.com/600x400';
         
         return [
-                'id' => $this->id,
-                'name' => $this->name,
+                'id' => $this->product_id,
+                'name' => $this->product_name,
                 'sku' => $this->sku,
                 'dropPrice' => $this->drop_price,
                 'retailPrice' => $this->retail_price,

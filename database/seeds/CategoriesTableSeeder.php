@@ -15,7 +15,7 @@ class CategoriesTableSeeder extends Seeder
         $categories = ['Джинсы', 'кофты', 'костюмы', 'джинсовки_кожанки', 'брюки спортивки', 'футболки', 'куртки_зима'];
 
         foreach ($categories as $categoryName) {
-            App\Category::create(['name' => $categoryName]);
+            App\Category::create(['category_name' => $categoryName]);
         }
     }
 }

@@ -13,10 +13,10 @@
 
             <v-toolbar-items class="hidden-sm-and-down">
                 <v-btn v-for="category in categories"
-                       :key="category.id"
-                       :to="{ name: 'home', params: { category_id: category.id, category_name: category.name }}"
+                       :key="category.category_id"
+                       :to="{ name: 'home', params: { category_id: category.category_id, category_name: category.category_name }}"
                        flat>
-                    {{ category.name }}
+                    {{ category.category_name }}
                 </v-btn>
                 <!-- <v-btn :to="{ name: 'home' }" flat>home</v-btn> -->
                 <v-btn v-if="!$auth.check()" :to="{ name: 'login' }" flat>Login</v-btn>
@@ -43,8 +43,8 @@
         methods: {
             getCategories(){
                 this.axios.get('categories').then((response) => {
+                    console.log(response.data);
                     this.categories = response.data;
-                    // console.log(this.categories);
                     
                 })
             }

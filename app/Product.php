@@ -7,12 +7,24 @@ use Carbon\Carbon;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'sku', 'drop_price', 'retail_price', 'image_url', 'image_name', 'category_id'];
+    protected $primaryKey = 'product_id';
+
+    protected $fillable = ['product_name', 'sku', 'drop_price', 'retail_price', 'image_url', 'image_name', 'category_id'];
 
     public function category()
     {
-        return $this->belongsTo('App\Category');
+        return $this->belongsTo('App\Category', 'category_id', 'category_id');
         // SELECT p.prod_name, GROUP_CONCAT(s.size_name) FROM products p JOIN attributes_sizes asz ON asz.attr_id = p.attr_id JOIN sizes s ON asz.size_id = s.size_id GROUP BY p.prod_id
+    }
+
+    public function attribute()
+    {
+        return $this->belongsTo('App\Attribute');
+    }
+
+    public function sizes()
+    {
+        return $this->belongsToMany('App\Size');
     }
 
     /* mutator - преобразовует атрибут преобразователь будет автоматически вызван, когда мы попытаемся установить значение атрибута `sku` */
