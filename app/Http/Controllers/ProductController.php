@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\Attribute;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\AttributeResource;
 
 class ProductController extends Controller
 {
@@ -157,5 +160,17 @@ class ProductController extends Controller
     {
         $product->delete();
         return response()->json('successfully deleted');
+    }
+
+    public function getAttributes(){
+        $attributes = DB::table('attributes')
+                        ->select(DB::raw('attributes.attribute_name, GROUP_CONCAT(`sizes`.`size_name`)'))
+                        ->join('attribute_size', 'attributes.attribute_id', '=', 'attribute_size.attribute_id')
+                        ->join('sizes', 'sizes.size_id', '=', 'attribute_size.size_id')
+                        ->groupBy('attributes.attribute_name')
+                        ->get()->toArray();
+                        // var_dump($attributes);
+        return $attributes;
+        return new AttributeResource($attributes);
     }
 }

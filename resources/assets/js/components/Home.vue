@@ -75,7 +75,7 @@
                                    width="70">
                             </v-img>
                         </v-flex>
-                        <v-flex xs12 sm6 md4>
+                        <v-flex xs12 sm6>
                             <v-text-field v-model.trim.number="editedItem.dropPrice"
                                           name="dropPrice"
                                           error-count="2"
@@ -87,7 +87,7 @@
                             </v-text-field>
                         </v-flex>
                         <!-- priceRules.isNumber @blur="resetValidation" -->
-                        <v-flex xs12 sm6 md4>
+                        <v-flex xs12 sm6>
                             <v-text-field v-model.trim.number="editedItem.retailPrice"
                                           name="retailPrice"
                                           error-count="2"
@@ -98,10 +98,21 @@
                                           :rules="[priceRules.requiredLenth]">
                             </v-text-field>
                         </v-flex>
-                        <v-flex xs12 sm6 md4>
+                        <template v-if="editedIndex === -1">
+                            <v-flex xs12 sm6>
+                                <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
+                                <v-select v-model="attributeSet"
+                                          :items="attributesName"
+                                          :rules="[v => !!v || 'обязательное поле']"
+                                          label="Атрибут сет"
+                                          required>
+                                </v-select>
+                            </v-flex>
+                        </template>
+                        <v-flex xs12 sm6>
                             <!-- <v-text-field v-model="editedItem.sizes" label="Размеры"></v-text-field> -->
                             <v-select v-model="editedItem.sizes"
-                                      :items="allSizes"
+                                      :items="allAttributeSizes"
                                       :menu-props="{ maxHeight: '400' }"
                                       label="Размеры"
                                       multiple
@@ -209,6 +220,10 @@
         errors: new Errors,
         categoryId: '',
         categoryName: '',
+        attributeSet: '',
+        attributesIds: [],
+        attributesName: [],
+        allAttributeSizes: [],
         pagination : {
             'sortBy': 'datetime',
             'descending': true,
@@ -222,7 +237,6 @@
             // }
         },
         // isRequired: [ v => !!v || 'Артикул обязателен' ],
-        allSizes: [29, 30 , 31, 32, 33, 34, 35, 36, 37],
         products: [],
         editedIndex: -1,
         editedItem: {
@@ -300,6 +314,7 @@
             // fetch the data when the view is created and the data is
             // already being observed
         this.fetchData();
+        this.getAttributes();
     },
     methods: {
         fetchData(){
@@ -313,16 +328,22 @@
             }
             if(this.categoryId){
                 this.axios.get('categories/'+ this.categoryId).then((response) => {
-                    // console.log(response.data);
                     this.products = response.data;
                 })
             }
             // else{
             //     this.axios.get('products').then((response) => {
             //         this.products = response.data;
-            //         // console.log(this.products);debugger;
             //     })
             // }
+        },
+        getAttributes(){
+            this.axios.get('products/attributes').then((response) => {
+                console.log(response.data)
+                this.attributesIds = response.data.map((g) =>{ return g.id})
+                this.attributesName = response.data.map((g) =>{ return g.name})
+                // this.allAttributeSizes
+            })
         },
         createProduct(newProduct){
             this.axios({
@@ -331,7 +352,6 @@
                 headers: { 'content-type': 'multipart/form-data' },
                 data: newProduct
             }).then((response) => {
-                // console.log(response.data);
                 this.editedItem.datetime = response.data.updated_at
                 this.products.push(this.editedItem);
             }).catch(error => this.errors.record(error.response.data));
@@ -345,9 +365,7 @@
             //     data: formData 
             // }
             ).then((response) => {
-                console.log(response.data.updated_at);
                 this.editedItem.datetime = response.data.updated_at;
-                console.log(this.editedItem);
                 Object.assign(this.products[this.editedIndex], this.editedItem);
             }).catch(error => this.errors.record(error.response.data));
         },
@@ -359,7 +377,6 @@
             if(remove){
                 this.axios.delete('products/' + prodId)
                 .then((response) => {
-                    // console.log(response);
                     this.products.splice(index, 1);
                 }).catch((error) => {
                     this.errors.record(error.response.data);
@@ -419,7 +436,6 @@
             this.dialog = true;
         },
         // deleteItem (item) {
-        //     console.log(item);debugger;
         //     deleteProduct(item);
         //     const index = this.products.indexOf(item)
         //     confirm('Вы уверены что хотите удалить этот продукт?') && this.products.splice(index, 1)
@@ -437,7 +453,6 @@
             var formData = new FormData(event.target);
             this.editedItem.sku = this.isEmptyOrSpaces(this.editedItem.sku);
             this.editedItem.categoryId = this.categoryId;
-            console.log(event.target);debugger;
             
             // formData.append('sku', this.editedItem.sku);
             if (this.$refs.form.validate()) {
